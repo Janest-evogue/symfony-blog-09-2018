@@ -100,13 +100,21 @@ class CategoryController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $em->remove($category);
-        $em->flush();
+        if (!$category->getArticles()->isEmpty()) {
+            $this->addFlash(
+                'error',
+                "La catégorie ne peut pas être supprimée car elle contient des articles"
+            );
+        } else {
+            $em->remove($category);
+            $em->flush();
 
-        $this->addFlash(
-            'success',
-            'La catégorie est supprimée'
-        );
+            $this->addFlash(
+                'success',
+                'La catégorie est supprimée'
+            );
+        }
+
 
         return $this->redirectToRoute('app_admin_category_index');
     }
